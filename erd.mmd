@@ -1,0 +1,96 @@
+erDiagram
+    books ||--|{ book_authors : "credits"
+    authors ||--o{ book_authors : "credited on"
+    books ||--o{ copies : "has"
+    books ||--o{ holds : "reserved by"
+    copies ||--o{ loans : "lent in"
+    patrons ||--o{ loans : "borrows"
+    patrons ||--o{ holds : "places"
+    patrons ||--o{ fines : "owes"
+    loans ||--o{ fines : "incurs"
+    patrons |o--o{ patrons : "guardian of"
+
+    books {
+        INTEGER book_id PK
+        TEXT title "required"
+        TEXT full_title
+        TEXT original_title
+        TEXT series_name
+        TEXT series_number
+        TEXT isbn10 UK "optional"
+        TEXT isbn13 UK "optional"
+        INTEGER publication_year "not in future"
+        TEXT language_code
+        REAL average_rating
+        INTEGER ratings_count
+        INTEGER goodreads_book_id
+        INTEGER goodreads_work_id
+        TEXT image_url
+        TEXT format "hardcover, paperback, audiobook, DVD"
+        TEXT audience "adult, teen, children"
+        TEXT shelf_code
+        TEXT publisher
+        TEXT genre
+    }
+    authors {
+        INTEGER author_id PK
+        TEXT name UK "full name"
+    }
+    book_authors {
+        INTEGER book_id PK, FK
+        INTEGER author_id PK, FK
+        INTEGER author_order "unique per book"
+    }
+    copies {
+        INTEGER copy_id PK
+        INTEGER book_id FK
+        TEXT barcode UK
+        TEXT status "available, checked_out, on_hold_shelf, lost, damaged, retired"
+        TEXT acquired_date
+        REAL cost "not negative"
+        INTEGER is_reference "1 = can't leave"
+    }
+    patrons {
+        INTEGER patron_id PK
+        TEXT name "required"
+        TEXT card_number UK
+        TEXT email "email or phone required"
+        TEXT phone
+        TEXT address
+        TEXT patron_type "adult, child, senior, staff"
+        TEXT joined_date
+        TEXT card_expires
+        TEXT standing "active, expired, blocked"
+        INTEGER guardian_id FK "required for children"
+    }
+    loans {
+        INTEGER loan_id PK
+        INTEGER copy_id FK "one open loan per copy"
+        INTEGER patron_id FK
+        TEXT checkout_date
+        TEXT due_date "after checkout"
+        TEXT return_date "blank while out"
+        INTEGER renewal_count "max from policies"
+    }
+    holds {
+        INTEGER hold_id PK
+        INTEGER book_id FK
+        INTEGER patron_id FK "one active hold per book"
+        TEXT placed_at "queue order"
+        TEXT status "waiting, ready, picked_up, cancelled, expired"
+        TEXT pickup_deadline "required when ready"
+    }
+    fines {
+        INTEGER fine_id PK
+        INTEGER patron_id FK
+        INTEGER loan_id FK
+        REAL amount "not negative"
+        TEXT reason "late, lost, damaged"
+        TEXT charged_date
+        TEXT paid_date "blank = unpaid"
+    }
+    policies {
+        TEXT policy_key PK
+        REAL value "read by triggers"
+        TEXT description
+    }
