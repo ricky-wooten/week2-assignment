@@ -1,6 +1,6 @@
 ![Entity-relationship diagram of library.db](erd.png)
 
-# Library Database: Design Summary
+# Design Summary (in my own words)
 
 I'm opening a small library, and `library.db` is the SQLite database that runs it. My goal was a database that doesn't just store information but **holds the library to its rules**. If someone tries to lend a book to a blocked member or check out a copy that's already out, the database itself refuses.
 
